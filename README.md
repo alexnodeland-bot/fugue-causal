@@ -2,7 +2,7 @@
 
 **Bayesian Causal Inference via Generalized Bayes**
 
-A Rust library for loss-based causal inference using generalized (Gibbs) posteriors, with Neyman-orthogonal identifiers and formal uncertainty quantification.
+A Rust library for loss-based causal inference using generalized (Gibbs) posteriors, **integrated with the [fugue](https://github.com/alexnodeland/fugue) probabilistic programming library**. Features Neyman-orthogonal identifiers and formal uncertainty quantification.
 
 ## Quick Start
 
@@ -52,17 +52,25 @@ TV(feasible_posterior, oracle_posterior) = O_P(√n · r_n²)
 ```
 where r_n is nuisance estimation error. If r_n = o(n^{-1/4}), posteriors are asymptotically indistinguishable.
 
-## Composability & Extensibility
+## Integration with Fugue
 
-**v1.0 (Current):**
-- Standalone library: causal inference via loss-based Gibbs posteriors
-- Customizable identifiers (trait-based: `CausalIdentifier`)
-- Pluggable nuisance estimators (trait-based: `NuisanceEstimator`)
-- Works independently or as a dependency in other projects
+**Fugue Integration (v1.0+):**
+- Use fugue probabilistic programs as causal data sources
+- Convert trace outputs to causal observations via `TraceObservation` trait
+- Run causal inference directly on probabilistic traces with `infer_from_traces()`
+- Effect handlers for conditioning traces on causal losses
 
-**v1.1+ (Future):**
-- Integration with [fugue](https://github.com/alexnodeland/fugue) PPL (probabilistic traces as causal priors)
+**Design Philosophy:**
+- Causal identifiers + loss functions work *independent* of fugue (no hard dependency)
+- Fugue integration is *additive*: use fugue traces for data, or provide observations directly
+- Extensible via traits: `CausalIdentifier`, `NuisanceEstimator`, `TraceObservation`
+
+## Composability & Future Extensions
+
+**v1.1+ (Q2 2026):**
 - **Causal-Evolutionary Search** via [fugue-evo](https://github.com/alexnodeland/fugue-evo): GA search over identifier + prior + estimator combinations
+- Continuous treatments, multiple outcomes, meta-learner ensemble
+- GPU acceleration (CUDA)
 - Domain-specific applications (synthesis, quantum, ML pipelines) as separate projects using fugue-causal as a library
 
 ## Paper

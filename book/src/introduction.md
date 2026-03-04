@@ -2,9 +2,31 @@
 
 ## What is Fugue-Causal?
 
-**Fugue-Causal** is a Rust library for **Bayesian causal inference via generalized Bayes** (Gibbs posteriors). It provides loss-based causal identification with Neyman-orthogonal estimators and formal uncertainty quantification, designed for composability and extensibility in production systems.
+**Fugue-Causal** is a Rust library for **Bayesian causal inference via generalized Bayes** (Gibbs posteriors), **integrated with the [fugue](https://github.com/alexnodeland/fugue) probabilistic programming library**. It provides loss-based causal identification with Neyman-orthogonal estimators and formal uncertainty quantification, enabling causal inference directly on probabilistic traces.
 
-**Future integration** with the [fugue](https://github.com/alexnodeland/fugue) probabilistic programming library is planned for v1.1+ (probabilistic traces as causal priors).
+## Fugue Integration
+
+Use `fugue` probabilistic programs as causal data sources:
+
+```rust
+use fugue_causal::fugue_integration::{TraceObservation, infer_from_traces};
+use fugue_causal::*;
+
+// Implement TraceObservation for your trace output
+impl TraceObservation for MyTraceOutput {
+    fn extract_covariates(&self) -> Vec<f64> { /* ... */ }
+    fn extract_treatment(&self) -> f64 { /* ... */ }
+    fn extract_outcome(&self) -> f64 { /* ... */ }
+}
+
+// Run causal inference on traces
+let posterior = infer_from_traces(
+    traces,
+    DoublyRobust,
+    Box::new(PluginEstimator),
+    5,
+)?;
+```
 
 ## The Problem
 
