@@ -1,21 +1,42 @@
 # fugue-causal
 
-**Bayesian Causal Inference via Generalized Bayes**
+**Bayesian Causal Inference Extension for Fugue**
 
-A Rust library for loss-based causal inference using generalized (Gibbs) posteriors, **integrated with the [fugue](https://github.com/alexnodeland/fugue) probabilistic programming library**. Features Neyman-orthogonal identifiers and formal uncertainty quantification.
+An extension library for the [fugue](https://github.com/alexnodeland/fugue) probabilistic programming library. Adds loss-based causal inference using generalized (Gibbs) posteriors directly on probabilistic traces.
+
+## What is fugue-causal?
+
+**fugue-causal is not standalone.** It's built on top of fugue and extends its trace system with:
+
+1. **Causal Identifiers** — Loss-based identification strategies (RA, IPW, DR/AIPW, R-learner)
+2. **Gibbs Posteriors** — Bayesian inference on causal estimands via exp{-ωn·L_n(θ)}·π(θ)
+3. **Cross-Fitting** — Neyman-orthogonal parameter estimation for formal robustness
+4. **Uncertainty Quantification** — Credible intervals with bootstrap calibration
+
+The core architecture treats **fugue traces as causal data sources**. Effect handlers apply causal losses, enabling direct inference on trace outputs without ever specifying full generative models.
 
 ## Quick Start
 
+Use fugue to generate observational data. Implement `TraceObservation` for your trace type. Run causal inference:
+
 ```rust
 use fugue_causal::*;
+use fugue_causal::fugue_integration::{TraceObservation, infer_from_traces};
 
-// Estimate average treatment effect (ATE)
-let posterior = infer_causal(
-    prior_ate(),                      // Prior on causal effect
-    DoublyRobust,                     // Identification strategy (orthogonal)
-    Box::new(PluginEstimator),        // Nuisance estimator
-    5,                                // K-fold cross-fitting
-    &observations,                    // Data: Vec<(covariate, treatment, outcome)>
+// Your trace output type
+impl TraceObservation for MyTrace {
+    fn extract_covariates(&self) -> Vec<f64> { /* ... */ }
+    fn extract_treatment(&self) -> f64 { /* ... */ }
+    fn extract_outcome(&self) -> f64 { /* ... */ }
+}
+
+// Run fugue program → collect traces → infer causally
+let traces = my_probabilistic_program();
+let posterior = infer_from_traces(
+    traces,
+    DoublyRobust,
+    Box::new(PluginEstimator),
+    5,  // K-fold
 )?;
 
 println!("ATE: {:.4} ± {:.4}", posterior.point_estimate, posterior.posterior_sd);
@@ -23,65 +44,118 @@ println!("ATE: {:.4} ± {:.4}", posterior.point_estimate, posterior.posterior_sd
 
 ## Why This Matters
 
-**Standard Bayesian causal inference is brittle:**
-- Requires specifying full data-generating models (P(X,A,Y|ξ))
-- High-dimensional nuisance priors are hard to elicit
+**Standard Bayesian causal inference is fragile:**
+- Requires full data-generating models: P(X, A, Y | ξ)
+- Nuisance priors are indirect and hard to elicit
 - Vulnerable to model misspecification
 
 **Generalized Bayes is cleaner:**
 - Skip the likelihood entirely
 - Place priors directly on causal estimands (ATE, CATE, etc.)
 - Update via identification-driven loss functions
-- Formal robustness: Neyman-orthogonal losses give O_P(√n r²_n) nuisance robustness (vs. O_P(√n r_n))
+- Formal robustness: Neyman-orthogonal losses give O_P(√n r_n²) nuisance robustness (vs. O_P(√n r_n))
 
-## Key Features
+## Core Features
 
-- **Composable identifiers**: RA, IPW, DR/AIPW, R-learner, custom
-- **Formal uncertainty quantification**: Gibbs posteriors with bootstrap calibration
-- **Cross-fitting preservation**: Maintains orthogonality for valid inference
-- **Estimand-native priors**: Place beliefs directly on treatment effects, not nuisances
-- **Generics over estimands**: ATE, CATE, ATT, ATU, HTE, custom
+### Identifiers (4 built-in + custom)
+- **Regression Adjustment (RA)**: m̂₁(X) - m̂₀(X)
+- **Inverse Probability Weighting (IPW)**: A·Y/ê - (1-A)·Y/(1-ê)
+- **Doubly Robust/AIPW**: Combines RA + IPW (Neyman-orthogonal)
+- **R-Learner**: Residual-on-residual (always orthogonal)
+
+### Estimands
+- **ATE**: Average Treatment Effect
+- **CATE**: Conditional ATE (stratified by covariate)
+- **ATT/ATU**: Effects on treated/untreated
+- **HTE**: Heterogeneous treatment effects
+- **Custom**: User-defined estimands
+
+### Guarantees
+- **Neyman-Orthogonality**: Second-order nuisance robustness
+- **Cross-Fitting**: Eliminates empirical process bias
+- **Credible Intervals**: Valid frequentist coverage (bootstrap calibrated)
+- **Checkpointing**: Serialize posteriors for reproducibility
 
 ## Theory
 
-See [SPEC.md](./SPEC.md) for the full framework, theorems, and integration design.
+**Source:** Javurek, E., et al. (2026). "Generalized Bayes for Causal Inference."  
+ArXiv: [2603.03035v1](https://arxiv.org/abs/2603.03035)
 
-**Core Theorem (5.1):** Under Neyman-orthogonality + cross-fitting:
+**Theorem 5.1** (Posterior Stability Under Orthogonality):
 ```
-TV(feasible_posterior, oracle_posterior) = O_P(√n · r_n²)
+TV(q_n,fe, q_n,or) = O_P(√n · r_n²)
 ```
-where r_n is nuisance estimation error. If r_n = o(n^{-1/4}), posteriors are asymptotically indistinguishable.
-
-## Integration with Fugue
-
-**Fugue Integration (v1.0+):**
-- Use fugue probabilistic programs as causal data sources
-- Convert trace outputs to causal observations via `TraceObservation` trait
-- Run causal inference directly on probabilistic traces with `infer_from_traces()`
-- Effect handlers for conditioning traces on causal losses
-
-**Design Philosophy:**
-- Causal identifiers + loss functions work *independent* of fugue (no hard dependency)
-- Fugue integration is *additive*: use fugue traces for data, or provide observations directly
-- Extensible via traits: `CausalIdentifier`, `NuisanceEstimator`, `TraceObservation`
-
-## Composability & Future Extensions
-
-**v1.1+ (Q2 2026):**
-- **Causal-Evolutionary Search** via [fugue-evo](https://github.com/alexnodeland/fugue-evo): GA search over identifier + prior + estimator combinations
-- Continuous treatments, multiple outcomes, meta-learner ensemble
-- GPU acceleration (CUDA)
-- Domain-specific applications (synthesis, quantum, ML pipelines) as separate projects using fugue-causal as a library
-
-## Paper
-
-**Source:** [Generalized Bayes for Causal Inference](https://arxiv.org/abs/2603.03035v1)  
-Javurek, E., et al. (2026). ArXiv:2603.03035v1  
+where r_n is nuisance estimation error. Under Neyman-orthogonality + cross-fitting, 
+feasible posteriors are asymptotically indistinguishable from oracle posteriors.
 
 ## Status
 
-**v1.0.0 Production Release**: All core features complete. 40 tests passing. Full documentation. Ready for use in production causal inference pipelines. Designed for extensibility — implement custom identifiers and nuisance estimators via traits.
+**v1.0.0 Production Release**
+- ✅ Core causal inference engine (40 tests passing)
+- ✅ Full CI/CD (GitHub Actions)
+- ✅ mdBook documentation (8 chapters, 50KB)
+- ✅ API stability guarantee (v1.0 → v1.x backward compatible)
+- ✅ Fugue integration layer (TraceObservation trait, infer_from_traces)
+
+**v1.1+ (Q2 2026):**
+- Continuous treatments
+- Multiple outcomes
+- Meta-learner ensemble
+- GPU acceleration (CUDA)
+
+## Installation
+
+Requires [fugue](https://github.com/alexnodeland/fugue) as a dependency:
+
+```toml
+[dependencies]
+fugue = { path = "../fugue" }  # Once available as registry package
+fugue-causal = "1.0.0"
+```
+
+## Examples
+
+```bash
+# Direct causal inference (no traces needed)
+cargo run --example ate_basic
+
+# Heterogeneous treatment effects
+cargo run --example cate_heterogeneous
+```
+
+See [book/src/examples.md](book/src/examples.md) for full walkthroughs.
+
+## Documentation
+
+- **[Introduction](book/src/introduction.md)**: Problem statement, solution, integration with fugue
+- **[Theory](book/src/theory.md)**: Deep dive on orthogonality, convergence rates
+- **[Quick Start](book/src/quick-start.md)**: 5-minute setup guide
+- **[Tutorials](book/src/tutorials.md)**: Step-by-step walkthroughs
+- **[API Reference](book/src/api-reference.md)**: All public functions and traits
+- **[Examples](book/src/examples.md)**: Working code samples
+- **[FAQ](book/src/faq.md)**: Troubleshooting and common questions
+
+Build locally: `mdbook serve book/`
+
+## Citation
+
+```bibtex
+@article{javurek2026generalizedbayes,
+  title={Generalized Bayes for Causal Inference},
+  author={Javurek, E. and others},
+  journal={arXiv preprint},
+  year={2026},
+  eprint={2603.03035}
+}
+```
+
+## Ecosystem
+
+- **[fugue](https://github.com/alexnodeland/fugue)** — Probabilistic programming library (core dependency)
+- **[fugue-evo](https://github.com/alexnodeland/fugue-evo)** — Evolutionary algorithms for causal estimator search
+- **[quiver](https://github.com/alexnodeland/quiver)** — Audio synthesis library (domain application)
 
 ---
 
-**Library ecosystem:** [fugue](https://github.com/alexnodeland/fugue) (probabilistic programming), [fugue-evo](https://github.com/alexnodeland/fugue-evo) (genetic algorithms)
+**License:** MIT  
+**Repository:** https://github.com/alexnodeland/fugue-causal

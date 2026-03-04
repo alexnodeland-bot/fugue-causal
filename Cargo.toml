@@ -4,25 +4,20 @@ version = "1.0.0"
 edition = "2021"
 authors = ["Alex Nodeland <alex@ournature.studio>"]
 license = "MIT"
-description = "Bayesian causal inference via generalized Bayes (Gibbs posteriors), integrated with fugue probabilistic programming"
+description = "Bayesian causal inference extension for fugue probabilistic programming. Loss-based Gibbs posteriors on traces."
 repository = "https://github.com/alexnodeland/fugue-causal"
 keywords = ["causal-inference", "bayesian", "probabilistic-programming", "generalized-bayes"]
 categories = ["science", "mathematics"]
 
 [dependencies]
-# Optional: fugue integration (enable with `cargo build --features fugue-integration`)
-# fugue = { path = "../fugue", optional = true }
+# Core dependency: fugue probabilistic programming library
+# fugue = { path = "../fugue" }  # Uncomment when available as local/registry dependency
 ndarray = "0.15"
 rand = { version = "0.8", features = ["small_rng"] }
 rand_distr = "0.4"
 rayon = "1.7"
 serde = { version = "1.0", features = ["derive"] }
 bincode = "1.3"
-
-[features]
-default = []
-# Enable integration with fugue probabilistic programming library
-# fugue-integration = ["fugue"]
 
 [dev-dependencies]
 criterion = "0.5"
