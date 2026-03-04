@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+type: software
+title: "Fugue-Causal: Bayesian Causal Inference via Generalized Bayes"
+version: 1.0.0
+date-released: 2026-03-04
+authors:
+  - family-names: Nodeland
+    given-names: Alex
+    email: alex@ournature.studio
+    affiliation: "Self-directed AI Engineering"
+repository-code: "https://github.com/alexnodeland-bot/fugue-causal"
+license: MIT
+keywords:
+  - causal-inference
+  - bayesian
+  - gibbs-posteriors
+  - orthogonal-learning
+  - generalized-bayes
+abstract: |
+  A Rust library for Bayesian causal inference via generalized Bayes (Gibbs posteriors).
+  Implements loss-based causal identification with formal orthogonality guarantees,
+  integrated with the fugue probabilistic programming ecosystem.
+
+references:
+  - type: article
+    authors:
+      - family-names: Javurek
+        given-names: E.
+      - family-names: "et al."
+    year: 2026
+    title: "Generalized Bayes for Causal Inference"
+    journal: arXiv
+    volume: "2603.03035"
+    url: "https://arxiv.org/abs/2603.03035"
