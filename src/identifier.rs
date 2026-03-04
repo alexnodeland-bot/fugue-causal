@@ -148,6 +148,57 @@ impl CausalIdentifier for DoublyRobust {
     }
 }
 
+/// Residual-on-Residual Learner (R-Learner)
+///
+/// **Reference:** Chernozhukov, V., et al. (2018). "Double Machine Learning for Treatment and
+/// Structural Parameters." *The Econometrics Journal*, 21(1), C1-C68.
+///
+/// The R-learner is **always** Neyman-orthogonal by construction. It works by:
+/// 1. Residualizing treatment: Ã = A − e(X)
+/// 2. Residualizing outcome: Ỹ = Y − m(X)
+/// 3. Loss is: (Ã · θ − Ỹ)² / (Ã²)
+///
+/// This construction ensures orthogonality even when nuisances are estimated.
+pub struct RLearner;
+
+impl CausalIdentifier for RLearner {
+    fn loss(&self, observation: &[f64], estimand_value: f64, nuisances: &[f64]) -> f64 {
+        // observation: [A, Y, X_features...]
+        // nuisances: [e(X), m(X)]
+        let a = observation[0];
+        let y = observation[1];
+        let e = nuisances[0];
+        let m = nuisances[1];
+
+        // Residualized treatment
+        let a_tilde = a - e;
+
+        // Residualized outcome
+        let y_tilde = y - m;
+
+        // Loss: (Ã · θ − Ỹ)²
+        let residual = a_tilde * estimand_value - y_tilde;
+        residual.powi(2)
+    }
+
+    fn nuisance_names(&self) -> Vec<&'static str> {
+        vec!["e", "m"] // propensity + marginal outcome
+    }
+
+    fn orthogonality(&self) -> Orthogonality {
+        Orthogonality::Neyman
+    }
+
+    fn nuisance_rate_requirement(&self) -> NuisanceRate {
+        // R-learner requires nuisance convergence at rate o(n^{-1/4})
+        NuisanceRate::Slow
+    }
+
+    fn name(&self) -> &'static str {
+        "R-Learner (Orthogonal ML)"
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -243,5 +294,67 @@ mod tests {
     fn test_dr_nuisance_rate() {
         let dr = DoublyRobust;
         assert_eq!(dr.nuisance_rate_requirement(), NuisanceRate::Slow);
+    }
+
+    #[test]
+    fn test_rlearner_loss_at_true_estimand() {
+        let rl = RLearner;
+        let observation = vec![1.0, 5.0]; // A=1, Y=5
+        let true_ate = 2.0;
+        let nuisances = vec![0.5, 1.0]; // e=0.5, m=1.0
+
+        // Ã = 1.0 - 0.5 = 0.5
+        // Ỹ = 5.0 - 1.0 = 4.0
+        // Loss = (0.5 * 2.0 - 4.0)^2 = (1.0 - 4.0)^2 = 9.0
+        let loss = rl.loss(&observation, true_ate, &nuisances);
+        assert!(loss > 0.0);
+    }
+
+    #[test]
+    fn test_rlearner_orthogonality() {
+        let rl = RLearner;
+        assert_eq!(rl.orthogonality(), Orthogonality::Neyman);
+    }
+
+    #[test]
+    fn test_rlearner_nuisance_names() {
+        let rl = RLearner;
+        assert_eq!(rl.nuisance_names(), vec!["e", "m"]);
+    }
+
+    #[test]
+    fn test_rlearner_nuisance_rate() {
+        let rl = RLearner;
+        assert_eq!(rl.nuisance_rate_requirement(), NuisanceRate::Slow);
+    }
+
+    #[test]
+    fn test_rlearner_loss_properties() {
+        let rl = RLearner;
+        let observation = vec![0.8, 3.5];
+        let nuisances = vec![0.4, 1.5];
+
+        // Loss should be non-negative
+        let loss1 = rl.loss(&observation, 1.0, &nuisances);
+        let loss2 = rl.loss(&observation, 2.0, &nuisances);
+        assert!(loss1 >= 0.0 && loss2 >= 0.0);
+
+        // Loss should vary with estimand value
+        assert_ne!(loss1, loss2);
+    }
+
+    #[test]
+    fn test_all_identifiers_have_names() {
+        let identifiers: Vec<Box<dyn CausalIdentifier>> = vec![
+            Box::new(RegressionAdjustment),
+            Box::new(InverseProbabilityWeighting),
+            Box::new(DoublyRobust),
+            Box::new(RLearner),
+        ];
+
+        for id in identifiers {
+            let name = id.name();
+            assert!(!name.is_empty(), "Identifier should have non-empty name");
+        }
     }
 }

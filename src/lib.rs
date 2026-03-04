@@ -33,15 +33,17 @@
 //! let posterior = infer_causal(problem, observational_data)?;
 //! ```
 
+pub mod bootstrap;
 pub mod cross_fit;
 pub mod estimand;
 pub mod identifier;
 pub mod nuisance;
 pub mod posterior;
 
+pub use bootstrap::{calibrate_omega, OmegaCalibration};
 pub use cross_fit::{cross_fit, CrossFittedNuisances};
 pub use estimand::Estimand;
-pub use identifier::{CausalIdentifier, Orthogonality};
+pub use identifier::{CausalIdentifier, Orthogonality, RLearner};
 pub use nuisance::NuisanceEstimator;
 pub use posterior::{infer_causal, CausalPosterior};
 
