@@ -37,14 +37,11 @@ impl NuisanceEstimator for PluginEstimator {
         validation_data: &[(Vec<f64>, f64, f64)],
     ) -> Result<Vec<Vec<f64>>, String> {
         // Compute sample propensity from training data
-        let p_treated = training_data
-            .iter()
-            .filter(|(_, a, _)| *a > 0.5)
-            .count() as f64
+        let p_treated = training_data.iter().filter(|(_, a, _)| *a > 0.5).count() as f64
             / training_data.len() as f64;
 
         // Bound propensity away from 0 and 1
-        let propensity = (p_treated).max(0.01).min(0.99);
+        let propensity = (p_treated).clamp(0.01, 0.99);
 
         // Compute conditional outcome means
         let (sum_y_treated, count_treated, sum_y_control, count_control) = training_data

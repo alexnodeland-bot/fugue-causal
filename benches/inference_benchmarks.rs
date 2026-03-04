@@ -50,15 +50,7 @@ fn benchmark_rlearner_ate_500(c: &mut Criterion) {
     let data = black_box(generate_synthetic_data(500));
 
     c.bench_function("rlearner_ate_n500", |b| {
-        b.iter(|| {
-            infer_causal(
-                prior_ate(),
-                RLearner,
-                Box::new(PluginEstimator),
-                5,
-                &data,
-            )
-        })
+        b.iter(|| infer_causal(prior_ate(), RLearner, Box::new(PluginEstimator), 5, &data))
     });
 }
 
@@ -66,15 +58,7 @@ fn benchmark_rlearner_ate_1000(c: &mut Criterion) {
     let data = black_box(generate_synthetic_data(1000));
 
     c.bench_function("rlearner_ate_n1000", |b| {
-        b.iter(|| {
-            infer_causal(
-                prior_ate(),
-                RLearner,
-                Box::new(PluginEstimator),
-                5,
-                &data,
-            )
-        })
+        b.iter(|| infer_causal(prior_ate(), RLearner, Box::new(PluginEstimator), 5, &data))
     });
 }
 

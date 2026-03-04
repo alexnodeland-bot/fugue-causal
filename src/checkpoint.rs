@@ -63,8 +63,7 @@ impl PosteriorCheckpoint {
 
     /// Save checkpoint to file (binary format)
     pub fn save<P: AsRef<Path>>(&self, path: P) -> Result<(), String> {
-        let bytes =
-            bincode::serialize(self).map_err(|e| format!("Serialization failed: {}", e))?;
+        let bytes = bincode::serialize(self).map_err(|e| format!("Serialization failed: {}", e))?;
 
         let mut file = File::create(path).map_err(|e| format!("File creation failed: {}", e))?;
 
@@ -148,7 +147,7 @@ mod tests {
     #[test]
     fn test_checkpoint_roundtrip() {
         let posterior = CausalPosterior {
-            point_estimate: 3.14,
+            point_estimate: std::f64::consts::PI,
             posterior_sd: 0.08,
             omega: 1.5,
             calibration_method: "grid_search".to_string(),
@@ -160,10 +159,7 @@ mod tests {
         assert_eq!(recovered.point_estimate, posterior.point_estimate);
         assert_eq!(recovered.posterior_sd, posterior.posterior_sd);
         assert_eq!(recovered.omega, posterior.omega);
-        assert_eq!(
-            recovered.calibration_method,
-            posterior.calibration_method
-        );
+        assert_eq!(recovered.calibration_method, posterior.calibration_method);
     }
 
     #[test]

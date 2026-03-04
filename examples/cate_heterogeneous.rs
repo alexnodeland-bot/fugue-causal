@@ -5,9 +5,7 @@
 //! - Effect heterogeneity detection
 //! - Confidence intervals per stratum
 
-use fugue_causal::{
-    infer_causal, prior_ate, RLearner, PluginEstimator,
-};
+use fugue_causal::{infer_causal, prior_ate, PluginEstimator, RLearner};
 
 fn main() {
     println!("=== Fugue-Causal: Heterogeneous Treatment Effects (CATE) ===\n");
@@ -18,7 +16,7 @@ fn main() {
     let num_folds = 5;
 
     // Generate data stratified by X
-    let strata_boundaries = vec![-1.0, -0.5, 0.0, 0.5, 1.0];
+    let strata_boundaries = [-1.0, -0.5, 0.0, 0.5, 1.0];
     let mut stratum_results = Vec::new();
 
     for (stratum_idx, window) in strata_boundaries.windows(2).enumerate() {
@@ -81,7 +79,7 @@ fn main() {
     );
     println!("{}", "-".repeat(70));
 
-    for (idx, x_min, x_max, center, truth, est, sd, ci_l, ci_u, covers) in stratum_results.iter()
+    for (idx, _x_min, _x_max, center, truth, est, sd, ci_l, ci_u, covers) in stratum_results.iter()
     {
         let ci_str = format!("[{:.3}, {:.3}]", ci_l, ci_u);
         let mark = if *covers { "✓" } else { "✗" };
