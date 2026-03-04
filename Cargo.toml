@@ -1,0 +1,31 @@
+[package]
+name = "fugue-causal"
+version = "0.1.0"
+edition = "2021"
+authors = ["Alex Nodeland <alex@ournature.studio>"]
+license = "MIT"
+description = "Bayesian causal inference via generalized Bayes (Gibbs posteriors) integrated with fugue PPL"
+repository = "https://github.com/alexnodeland/fugue-causal"
+keywords = ["causal-inference", "bayesian", "probabilistic-programming", "generalized-bayes"]
+categories = ["science", "mathematics"]
+
+[dependencies]
+fugue = { path = "../fugue", optional = true }
+ndarray = "0.15"
+rand = "0.8"
+rayon = "1.7"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[example]]
+name = "ate_estimation"
+path = "examples/ate_estimation.rs"
+
+[[example]]
+name = "heterogeneous_effects"
+path = "examples/heterogeneous_effects.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
