@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["estimand","identifier","nuisance","posterior"],"struct":["CausalProblem"]};

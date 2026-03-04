@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Estimand"],"fn":["prior_ate","prior_ate_informed"],"struct":["TreatmentSpec"]};

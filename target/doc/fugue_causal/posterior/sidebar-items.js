@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["infer_causal"],"struct":["CausalPosterior"]};

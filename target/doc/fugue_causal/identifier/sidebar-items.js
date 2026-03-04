@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["NuisanceRate","Orthogonality"],"struct":["DoublyRobust","InverseProbabilityWeighting","RegressionAdjustment"],"trait":["CausalIdentifier"]};

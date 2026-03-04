@@ -4,7 +4,7 @@
 //! using generalized (Gibbs) posteriors.
 //!
 //! **Source Paper:** Javurek, E., et al. (2026). "Generalized Bayes for Causal Inference."
-//! ArXiv:2603.03035v1. https://arxiv.org/abs/2603.03035
+//! ArXiv:2603.03035v1. <https://arxiv.org/abs/2603.03035>
 //!
 //! ## Core Idea
 //!
@@ -41,15 +41,15 @@ pub mod posterior;
 pub use estimand::Estimand;
 pub use identifier::{CausalIdentifier, Orthogonality};
 pub use nuisance::NuisanceEstimator;
-pub use posterior::{CausalPosterior, infer_causal};
+pub use posterior::{infer_causal, CausalPosterior};
 
 // Re-exports
-pub use estimand::{TreatmentSpec, prior_ate};
+pub use estimand::{prior_ate, TreatmentSpec};
 
 /// A causal inference problem specification.
 pub struct CausalProblem<T: CausalIdentifier> {
-    /// Prior distribution over the causal estimand
-    pub estimand_prior: Box<dyn Fn() -> f64>,
+    /// Prior distribution over the causal estimand: log π(θ)
+    pub estimand_prior: Box<dyn Fn(f64) -> f64>,
     /// Strategy for identifying causal effects from observational data
     pub identifier: T,
     /// Estimator for nuisance components (propensity, outcomes, etc.)

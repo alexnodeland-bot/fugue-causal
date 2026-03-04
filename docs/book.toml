@@ -1,0 +1,17 @@
+[book]
+title = "fugue-causal: Bayesian Causal Inference"
+description = "A Rust library for loss-based causal inference using generalized (Gibbs) posteriors integrated with the fugue probabilistic programming library."
+authors = ["Alex Nodeland"]
+language = "en"
+
+[build]
+build-dir = "book"
+
+[output.html]
+theme = "rust"
+git-repository-url = "https://github.com/alexnodeland-bot/fugue-causal"
+git-repository-edit-url = "https://github.com/alexnodeland-bot/fugue-causal/edit/main/docs/src"
+
+[output.html.mathjax-config]
+additional-css = ["katex.min.css"]
+additional-js = ["katex.min.js", "auto-render.min.js", "mathjax-init.js"]
