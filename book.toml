@@ -1,0 +1,8 @@
+[book]
+title = "Fugue-Causal: Bayesian Causal Inference"
+authors = ["Alex Nodeland"]
+language = "en"
+src = "book"
+
+[output.html]
+theme = "default"

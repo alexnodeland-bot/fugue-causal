@@ -43,8 +43,8 @@ pub mod posterior;
 pub use bootstrap::{calibrate_omega, OmegaCalibration};
 pub use cross_fit::{cross_fit, CrossFittedNuisances};
 pub use estimand::Estimand;
-pub use identifier::{CausalIdentifier, Orthogonality, RLearner};
-pub use nuisance::NuisanceEstimator;
+pub use identifier::{CausalIdentifier, DoublyRobust, Orthogonality, RLearner};
+pub use nuisance::{NuisanceEstimator, PluginEstimator};
 pub use posterior::{infer_causal, CausalPosterior};
 
 // Re-exports
