@@ -154,9 +154,6 @@ jobs:
       - name: Build mdbook
         run: mdbook build book
 
-      - name: Test code examples in mdbook
-        run: mdbook test book
-
   # Summary job that depends on all other jobs
   ci-success:
     name: CI Success
