@@ -17,7 +17,7 @@ use rand::seq::SliceRandom;
 #[derive(Clone, Debug)]
 pub struct CrossFittedNuisances {
     /// Nuisance estimates for each observation
-    /// nuisances[i] = nuisance estimates for observation i
+    /// nuisances\[i\] = nuisance estimates for observation i
     pub estimates: Vec<Vec<f64>>,
 
     /// Fold assignment for each observation (for diagnostics)
@@ -45,7 +45,7 @@ pub struct CrossFittedNuisances {
 /// Under Neyman-orthogonality + cross-fitting, the first-order interaction
 /// between causal parameter θ and nuisance η vanishes:
 ///
-/// D_η D_θ E[loss] = 0
+/// D_η D_θ E\[loss\] = 0
 ///
 /// This ensures that nuisance estimation error r_n doesn't inflate the bias
 /// in θ̂. Instead, convergence is O_P(√n r_n²) rather than O_P(√n r_n).
