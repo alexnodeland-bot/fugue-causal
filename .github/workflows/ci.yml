@@ -110,7 +110,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo registry
-        uses: assets/cache@v4
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
@@ -152,10 +152,10 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Build mdbook
-        run: mdbook build docs
+        run: mdbook build book
 
       - name: Test code examples in mdbook
-        run: mdbook test docs
+        run: mdbook test book
 
   # Summary job that depends on all other jobs
   ci-success:
