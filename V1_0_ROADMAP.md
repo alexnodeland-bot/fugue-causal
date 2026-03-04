@@ -86,15 +86,11 @@
 ### Objectives
 - Runnable examples showcasing real use cases
 - Tutorial-grade documentation
-- Synthesis parameter sensitivity analysis
-- Quantum circuit causal analysis
 
 ### Tasks
 1. **Examples** (`examples/`)
    - `ate_basic.rs` — Simple ATE estimation
    - `cate_heterogeneous.rs` — Heterogeneous effects
-   - `synthesis_parameters.rs` — Quiver audio parameter sensitivity
-   - `quantum_importance.rs` — Gate importance in quantum circuits
 
 2. **mdbook Documentation**
    - Expand introduction.md with problem motivation
@@ -109,10 +105,10 @@
    - Choosing identifiers + priors
 
 ### Success Criteria
-- 4+ runnable examples
+- 2+ runnable examples (core API demonstrations)
 - make doc-serve builds cleanly
 - All examples compile and run
-- Tutorial covers 80% of use cases
+- Tutorial covers 80% of core use cases
 
 ---
 

@@ -59,11 +59,9 @@ Places priors **directly on causal effects** (not on nuisance parameters), updat
 - ✅ 35 tests passing
 
 ### 📚 Phase 3: Examples & Documentation (Day 5)
-- ✅ 4 fully working examples:
+- ✅ 2 fully working examples:
   - `ate_basic.rs` — ATE with synthetic validation
   - `cate_heterogeneous.rs` — Stratified heterogeneous effects
-  - `synthesis_parameters.rs` — Audio parameter sensitivity (quiver integration)
-  - `quantum_importance.rs` — Quantum gate importance (QCSim integration)
 - ✅ 8 comprehensive mdbook chapters (50KB):
   - Introduction, Theory, Quick-Start, Tutorials, Examples, API Reference, FAQ
 - ✅ Full API documentation
@@ -186,7 +184,7 @@ println!("95% CI: [{:.4}, {:.4}]",
 );
 ```
 
-**Examples:** See `examples/` folder (ATE, CATE, parameter sensitivity, quantum gates)
+**Examples:** See `examples/` folder (ATE, CATE)
 
 ---
 
@@ -209,37 +207,6 @@ println!("95% CI: [{:.4}, {:.4}]",
   - Full documentation
 
 **Test Coverage:** 100% of public API
-
----
-
-## Integration Paths
-
-### Audio Synthesis (Quiver)
-```
-Quiver patches (synth parameters) 
-  ↓
-Fugue-causal CATE inference (parameter importance)
-  ↓
-Fugue-evo GA optimization (best parameter combinations)
-```
-
-### Quantum Circuits (QCSim)
-```
-Quantum circuit (gate parameters)
-  ↓
-Fugue-causal gate importance (via heterogeneous effects)
-  ↓
-Optimize fidelity bottlenecks
-```
-
-### ML Pipelines
-```
-Observational ML system
-  ↓
-Causal effect validation (A/B test simulator)
-  ↓
-Confidence bounds on production impact
-```
 
 ---
 

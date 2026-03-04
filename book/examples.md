@@ -32,38 +32,6 @@
 
 ---
 
-## 3. Synthesis Parameter Sensitivity
-
-**File**: `examples/synthesis_parameters.rs`
-
-**What**: Identify which audio synthesis parameters most affect perceived quality (integration with quiver).
-
-**Run**: `cargo run --example synthesis_parameters`
-
-**Key concepts**:
-- CATE for parameter importance ranking
-- Effect size vs uncertainty tradeoff
-- Integration with generative systems
-- Parameter optimization via causal inference
-
----
-
-## 4. Quantum Gate Importance
-
-**File**: `examples/quantum_importance.rs`
-
-**What**: Determine which quantum gates most impact circuit success probability (integration with QCSim).
-
-**Run**: `cargo run --example quantum_importance`
-
-**Key concepts**:
-- Causal analysis of circuit design
-- Gate fidelity as treatment effect
-- Depth-dependent heterogeneity
-- Integration with quantum simulation
-
----
-
 ## How to Adapt Examples
 
 ### Example Template

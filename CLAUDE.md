@@ -132,7 +132,7 @@ pub fn infer_causal<T: CausalIdentifier>(
 - [ ] Checkpointing (pause/resume inference)
 - [ ] Parallel cross-fitting (rayon)
 - [ ] Feature flags (std, parallel, checkpoint)
-- [ ] Examples: ATE, CATE, synthesis, quantum
+- [ ] Examples: ATE, CATE
 - [ ] Performance benchmarks
 
 ### Phase 4: Polish & Release (Weeks 7+)

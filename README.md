@@ -51,16 +51,11 @@ TV(feasible_posterior, oracle_posterior) = O_P(√n · r_n²)
 ```
 where r_n is nuisance estimation error. If r_n = o(n^{-1/4}), posteriors are asymptotically indistinguishable.
 
-## Applications
+## Integration with fugue-evo
 
-### 1. Synthesis Parameter Sensitivity (Quiver)
-Which synth parameters causally affect your target tonal property? CATE estimation + parameter importance ranking.
+**Causal-Evolutionary Search**: Use fugue-evo genetic algorithms to search over causal inference strategies — find which identifier + prior + nuisance estimator works best for your problem.
 
-### 2. Quantum Circuit Design (QCSim + QAEAS)
-Which gates are causally important for outcome probability? Gate-level causal analysis + structure learning.
-
-### 3. Causal-Evolutionary Search (fugue-evo)
-GA over causal inference strategies: find which identifier + prior + nuisance estimator works best for your problem.
+Domain-specific applications (synthesis, quantum circuits, etc.) belong in separate projects that use fugue-causal as a library.
 
 ## Paper
 
@@ -73,4 +68,4 @@ Javurek, E., et al. (2026). ArXiv:2603.03035v1
 
 ---
 
-**Integration with:** [fugue](https://github.com/alexnodeland/fugue) (probabilistic programming), [fugue-evo](https://github.com/alexnodeland/fugue-evo) (genetic algorithms), [quiver](https://github.com/alexnodeland/quiver) (audio synthesis), [QCSim](https://github.com/alexnodeland/qcsim) (quantum computing)
+**Library ecosystem:** [fugue](https://github.com/alexnodeland/fugue) (probabilistic programming), [fugue-evo](https://github.com/alexnodeland/fugue-evo) (genetic algorithms)

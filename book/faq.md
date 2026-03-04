@@ -269,21 +269,7 @@ println!("Placebo effect: {:.4}", placebo_posterior.point_estimate);
 
 **Planned integration**: `fugue` traces + `fugue-causal` losses → automatic causal inference in probabilistic programs.
 
-### Q: How do I use this with quiver (synthesis) or QCSim (quantum)?
-
-**A**: Treat parameters as treatments, output as outcome:
-
-```rust
-// Synthesis example: Does filter cutoff affect perceived brightness?
-// X = base filter setting, A = adjusted cutoff (low/high)
-// Y = listener preference score
-
-// Quantum example: Does gate fidelity affect circuit success?
-// X = circuit depth, A = perfect vs noisy gate
-// Y = success probability
-```
-
-See [Examples](examples.md) for synthesis and quantum use cases.
+Domain-specific applications (synthesis, quantum circuits, etc.) belong in separate projects that use fugue-causal as a library.
 
 ---
 

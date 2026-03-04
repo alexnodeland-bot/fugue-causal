@@ -98,17 +98,12 @@ where r_n is nuisance estimation error. **Key:** Error propagates as r_n², not 
 - **Health**: Drug efficacy with uncertainty
 - **Climate**: Policy impact analysis
 
-### 3. Generative Systems Integration
-- **Audio**: Parameter sensitivity via **quiver** synthesis
-- **Quantum**: Gate fidelity importance via **QCSim**
-- **GA Search**: Automated estimator selection via **fugue-evo**
-
 ## Next Steps
 
 - **[Quick Start](quick-start.md)**: 5-minute setup
 - **[Theory](theory.md)**: Deep dive into orthogonality & convergence
 - **[Tutorials](tutorials.md)**: Step-by-step examples
-- **[Examples](examples.md)**: ATE, CATE, synthesis, quantum
+- **[Examples](examples.md)**: ATE, CATE
 
 ## Modules
 

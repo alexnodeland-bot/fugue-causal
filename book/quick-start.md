@@ -78,8 +78,6 @@ Clone the repo and run:
 ```bash
 cargo run --example ate_basic
 cargo run --example cate_heterogeneous
-cargo run --example synthesis_parameters
-cargo run --example quantum_importance
 ```
 
 ## Next Steps

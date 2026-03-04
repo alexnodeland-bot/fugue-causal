@@ -209,7 +209,7 @@ let posterior = infer_causal(
 ## Parameter Sensitivity Analysis
 
 ### Scenario
-You have a generative model (synthesis, simulation, quantum circuit) with many parameters. Which parameters most affect the outcome?
+You have a system with many parameters and want to know which ones most affect the outcome. Treat each parameter variation as a causal treatment.
 
 ### Approach: CATE for Parameters
 

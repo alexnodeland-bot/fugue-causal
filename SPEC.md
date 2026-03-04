@@ -296,49 +296,7 @@ GA searches over causal inference strategies:
 
 Result: Automatically find which causal inference method works best for your problem class.
 
-### 5.3 Causal Analysis of Synthesis (Quiver)
-
-Synth patch parameters → audio timbre. Use CATE to ask: **"Which parameters causally affect my target tonal property?"**
-
-```rust
-let patch = quiver::Patch::load("my_synth.json");
-let audio_examples = generate_with_perturbations(&patch, 1000)?;
-
-// Conditional ATE: effect of VCO frequency on brightness
-let brightness_cate = infer_causal(
-    CausalProblem {
-        estimand: CATE { treatment: "vco_freq", conditioning_vars: vec!["resonance"] },
-        identifier: DoublyRobust,
-        ..
-    },
-    audio_examples,
-)?;
-
-// Parameter importance ranking
-let importance = brightness_cate.effect_sizes();
-```
-
-### 5.4 Quantum Circuit Causal Analysis (QCSim + QAEAS)
-
-Gate sequences → quantum state evolution. Use causal inference to ask: **"Which gates and qubits are causally important for outcome probability?"**
-
-```rust
-let circuit = qcsim::Circuit::new();
-// Run circuit with perturbations (add/remove gates, change parameters)
-let outcome_samples = run_quantum_interventions(&circuit, 10000)?;
-
-// Causal effect of gate sequence on output probability
-let gate_ate = infer_causal(
-    CausalProblem {
-        estimand: ATE { treatment: "gate_on_qubit_0", control: "gate_off" },
-        identifier: DoublyRobust,
-        ..
-    },
-    outcome_samples,
-)?;
-```
-
-### 5.5 Proof-Carrying Code
+### 5.3 Proof-Carrying Code
 
 If you use orthogonal identifiers + cross-fitting + sufficient nuisance rates, you get formal convergence guarantees:
 
@@ -378,9 +336,8 @@ let posterior = infer_causal(problem, data)?;
 
 ### Phase 4: Validation & Applications (Weeks 7+)
 - [ ] Replicate paper's numerical experiments
-- [ ] Quiver synthesis use case (parameter sensitivity)
-- [ ] QCSim quantum circuit use case
 - [ ] Pair with fugue-evo for strategy search
+- [ ] Domain-specific applications in separate projects
 
 ---
 
