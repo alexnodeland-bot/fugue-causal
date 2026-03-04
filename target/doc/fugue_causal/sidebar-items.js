@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["estimand","identifier","nuisance","posterior"],"struct":["CausalProblem"]};
+window.SIDEBAR_ITEMS = {"mod":["cross_fit","estimand","identifier","nuisance","posterior"],"struct":["CausalProblem"]};

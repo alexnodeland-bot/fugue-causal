@@ -36,25 +36,122 @@ impl CausalPosterior {
 }
 
 /// Infer causal effect using Gibbs posterior
+///
+/// # Algorithm
+///
+/// 1. Cross-fit nuisance estimates (preserves orthogonality)
+/// 2. Compute empirical loss L_n(θ) = (1/n) Σ ℓ(O_i; θ, η̂_i)
+/// 3. Find point estimate θ̂ = argmin_θ L_n(θ)
+/// 4. Compute posterior variance via Hessian of loss
+/// 5. Return posterior: N(θ̂, (nωV₀)⁻¹)
+///
+/// # Theory
+///
+/// Under Neyman-orthogonality + cross-fitting:
+/// - Posterior converges to N(θ*, (nωV₀)⁻¹)
+/// - TV divergence from oracle ≤ O_P(√n r_n²)
+/// - Credible intervals have valid frequentist coverage (after ω calibration)
 pub fn infer_causal<T: CausalIdentifier>(
     _estimand_prior: Box<dyn Fn(f64) -> f64>,
-    _identifier: T,
-    _nuisance_estimator: Box<dyn NuisanceEstimator>,
-    _folds: usize,
-    _data: &[(Vec<f64>, f64, f64)],
+    identifier: T,
+    nuisance_estimator: Box<dyn NuisanceEstimator>,
+    folds: usize,
+    data: &[(Vec<f64>, f64, f64)],
 ) -> Result<CausalPosterior, String> {
-    // TODO: Implement full Gibbs posterior inference
-    // 1. Cross-fit nuisance estimates
-    // 2. Compute empirical loss
-    // 3. Calibrate omega via bootstrap
-    // 4. Sample from Gibbs posterior
+    let n = data.len() as f64;
+
+    // Step 1: Cross-fit nuisance estimates
+    let cf = crate::cross_fit::cross_fit(data, nuisance_estimator.as_ref(), folds, 42)?;
+
+    // Step 2: Compute empirical loss at different θ values
+    // Use grid search to find approximate minimum
+    let mut best_theta = 0.0;
+    let mut best_loss = f64::INFINITY;
+
+    let theta_grid = linspace(-2.0, 2.0, 100);
+
+    for &theta in &theta_grid {
+        let loss = compute_empirical_loss(data, &cf.estimates, theta, &identifier)?;
+        if loss < best_loss {
+            best_loss = loss;
+            best_theta = theta;
+        }
+    }
+
+    // Step 3: Refine around best θ (simple gradient descent)
+    let mut theta_hat = best_theta;
+    let step_size = 0.01;
+
+    for _ in 0..50 {
+        let loss_plus =
+            compute_empirical_loss(data, &cf.estimates, theta_hat + step_size, &identifier)?;
+        let loss_minus =
+            compute_empirical_loss(data, &cf.estimates, theta_hat - step_size, &identifier)?;
+
+        let gradient = (loss_plus - loss_minus) / (2.0 * step_size);
+
+        if gradient.abs() < 1e-6 {
+            break;
+        }
+
+        theta_hat -= step_size * gradient;
+    }
+
+    // Step 4: Estimate posterior variance (Hessian of loss)
+    let hessian_eps = 1e-4;
+    let loss_center = compute_empirical_loss(data, &cf.estimates, theta_hat, &identifier)?;
+    let loss_plus =
+        compute_empirical_loss(data, &cf.estimates, theta_hat + hessian_eps, &identifier)?;
+    let loss_minus =
+        compute_empirical_loss(data, &cf.estimates, theta_hat - hessian_eps, &identifier)?;
+
+    let hessian = (loss_plus - 2.0 * loss_center + loss_minus) / (hessian_eps * hessian_eps);
+
+    // Ensure positive definiteness
+    let hessian = if hessian > 0.0 { hessian } else { 0.01 };
+
+    // Step 5: Compute posterior standard deviation
+    // ω is calibration parameter; default to 1.0 (no calibration yet)
+    let omega = 1.0;
+    let posterior_variance = 1.0 / (n * omega * hessian);
+    let posterior_sd = posterior_variance.sqrt();
 
     Ok(CausalPosterior {
-        point_estimate: 0.5,
-        posterior_sd: 0.1,
-        omega: 1.0,
-        calibration_method: "bootstrap".to_string(),
+        point_estimate: theta_hat,
+        posterior_sd,
+        omega,
+        calibration_method: "grid_search".to_string(),
     })
+}
+
+/// Compute empirical loss: L_n(θ) = (1/n) Σ ℓ(O_i; θ, η̂_i)
+fn compute_empirical_loss<T: CausalIdentifier>(
+    data: &[(Vec<f64>, f64, f64)],
+    nuisances: &[Vec<f64>],
+    theta: f64,
+    identifier: &T,
+) -> Result<f64, String> {
+    let mut total_loss = 0.0;
+
+    for i in 0..data.len() {
+        let obs = &data[i];
+        let obs_array = vec![obs.1, obs.2]; // [A, Y]
+
+        let loss = identifier.loss(&obs_array, theta, &nuisances[i]);
+        total_loss += loss;
+    }
+
+    Ok(total_loss / data.len() as f64)
+}
+
+/// Generate linearly spaced values
+fn linspace(start: f64, end: f64, num: usize) -> Vec<f64> {
+    if num == 1 {
+        return vec![(start + end) / 2.0];
+    }
+
+    let step = (end - start) / (num - 1) as f64;
+    (0..num).map(|i| start + i as f64 * step).collect()
 }
 
 /// Normal distribution quantile function

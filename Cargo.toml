@@ -11,7 +11,8 @@ categories = ["science", "mathematics"]
 
 [dependencies]
 ndarray = "0.15"
-rand = "0.8"
+rand = { version = "0.8", features = ["small_rng"] }
+rand_distr = "0.4"
 rayon = "1.7"
 
 [dev-dependencies]

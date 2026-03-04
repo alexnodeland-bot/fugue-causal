@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["cross_fit"],"struct":["CrossFittedNuisances"]};
