@@ -2,7 +2,9 @@
 
 ## What is Fugue-Causal?
 
-**Fugue-Causal** is a Rust library for **Bayesian causal inference via generalized Bayes** (Gibbs posteriors). It extends the [fugue](https://github.com/alexnodeland/fugue) probabilistic programming library with loss-based causal inference, enabling composable, production-grade causal analysis pipelines.
+**Fugue-Causal** is a Rust library for **Bayesian causal inference via generalized Bayes** (Gibbs posteriors). It provides loss-based causal identification with Neyman-orthogonal estimators and formal uncertainty quantification, designed for composability and extensibility in production systems.
+
+**Future integration** with the [fugue](https://github.com/alexnodeland/fugue) probabilistic programming library is planned for v1.1+ (probabilistic traces as causal priors).
 
 ## The Problem
 
